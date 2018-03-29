@@ -28,6 +28,7 @@ FROM alpine
 
 COPY --from=builder /usr/bin/workbot /usr/bin/workbot
 COPY --from=builder /etc/ssl/certs/ /etc/ssl/certs
+COPY --from=builder /usr/local/go/lib/time/zoneinfo.zip /usr/local/go/lib/time/zoneinfo.zip
 
 ENTRYPOINT [ "workbot" ]
 CMD [ "--help" ]
