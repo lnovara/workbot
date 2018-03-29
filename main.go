@@ -100,65 +100,6 @@ func main() {
 	api.HandleBotUpdates()
 }
 
-// func main() {
-//   log.Printf("Authorized on account %s", BotAPI.Self.UserName)
-
-//   u := tgbotapi.NewUpdate(0)
-//   u.Timeout = 60
-
-//   updates, err := BotAPI.GetUpdatesChan(u)
-//   if err != nil {
-//     log.Fatal(err)
-//   }
-
-//   for update := range updates {
-//     if update.Message == nil {
-//       continue
-//     }
-
-//     log.Printf("%d %s %s", update.Message.MessageID, update.Message.From, update.Message.Text)
-
-//     // log.Printf("[%d %s %s] %s", update.Message.From.ID, update.Message.From.FirstName, update.Message.From.LastName, update.Message.Text)
-
-//     HandleMessage(update.Message)
-
-//     // if update.Message.Location == nil {
-//     //   msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Please send me your location.")
-//     //   msg.DisableWebPagePreview = false
-//     //   msg.ReplyMarkup = tgbotapi.NewReplyKeyboard(
-//     //     tgbotapi.NewKeyboardButtonRow(
-//     //       tgbotapi.NewKeyboardButtonLocation("Vabbuono!"),
-//     //     ),
-//     //   )
-//     //   BotAPI.Send(msg)
-//     // } else {
-//     //   r, err := Maps.Timezone(context.TODO(), &maps.TimezoneRequest{
-//     //     Location: &maps.LatLng{
-//     //       Lat: update.Message.Location.Latitude,
-//     //       Lng: update.Message.Location.Longitude,
-//     //     },
-//     //     Timestamp: time.Now(),
-//     //     Language: "en",
-//     //   })
-//     //   if err != nil {
-//     //     log.Fatal(err)
-//     //   }
-
-//     //   log.Printf("%s, %s", r.TimeZoneID, r.TimeZoneName)
-
-//     //   msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("Did you know you were in '%s' time zone?", r.TimeZoneID))
-//     //   // msg.ReplyToMessageID = update.Message.MessageID
-//     //   msg.DisableWebPagePreview = false
-
-//     //   BotAPI.Send(msg)
-//     // }
-//   }
-
-//   // check update.Message.From.ID is in DB
-//   // check user has given access to Sheets
-//   // check user has given sheet ID on which to operate
-// }
-
 func usageAndExit(message string, exitCode int) {
 	if message != "" {
 		fmt.Fprintf(os.Stderr, message)
