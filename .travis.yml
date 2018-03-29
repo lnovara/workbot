@@ -1,0 +1,13 @@
+---
+
+language: go
+go: "1.x"
+
+sudo: false
+
+install:
+  - go get github.com/golang/lint/golint
+  - go get honnef.co/go/tools/cmd/staticcheck
+
+notifications:
+  email: true
