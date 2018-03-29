@@ -39,7 +39,7 @@ func newSheetsClient(user *types.User) error {
 func createSpreadsheet(user *types.User) (string, string, error) {
 	err := newSheetsClient(user)
 	if err != nil {
-		return "", "", nil
+		return "", "", err
 	}
 
 	srv := sheetsClientPool[user.Id]
@@ -236,21 +236,26 @@ func appendEnterTime(user *types.User, date time.Time) error {
 
 	srv := sheetsClientPool[user.Id]
 
-	ms, err := getSpreadsheet(user, monday.Format(date, "January", monday.LocaleItIT))
+	loc, err := time.LoadLocation(user.TimeZone)
+	if err != nil {
+		return err
+	}
+
+	ms, err := getSpreadsheet(user, monday.Format(date.In(loc), "January", monday.LocaleItIT))
 	if err != nil {
 		return err
 	}
 
 	if len(ms) > 0 {
 		lastRow := ms[len(ms)-1]
-		if lastRow[0] == date.Format("2006-01-02") {
+		if lastRow[0] == date.In(loc).Format("2006-01-02") {
 			return errAlreadyEnter
 		}
 	}
 
 	vr := &sheets.ValueRange{
-		Values: [][]interface{}{{date.Format("2006-01-02"),
-			date.Format("15:04"),
+		Values: [][]interface{}{{date.In(loc).Format("2006-01-02"),
+			date.In(loc).Format("15:04"),
 			fmt.Sprintf("=B:B + \"%s\"", user.WorkDay.Format("15:04")),
 			"",
 			"=D:D - B:B",
@@ -260,7 +265,7 @@ func appendEnterTime(user *types.User, date time.Time) error {
 		}},
 	}
 
-	appendRange := fmt.Sprintf("%s!A:A", strings.Title(monday.Format(date, "January", monday.LocaleItIT)))
+	appendRange := fmt.Sprintf("%s!A:A", strings.Title(monday.Format(date.In(loc), "January", monday.LocaleItIT)))
 	_, err = srv.Spreadsheets.Values.Append(user.SheetId, appendRange, vr).ValueInputOption("USER_ENTERED").Do()
 	if err != nil {
 		return err
@@ -304,9 +309,14 @@ func appendExitTime(user *types.User, date time.Time) error {
 		return err
 	}
 
+	loc, err := time.LoadLocation(user.TimeZone)
+	if err != nil {
+		return err
+	}
+
 	srv := sheetsClientPool[user.Id]
 
-	month := monday.Format(date, "January", monday.LocaleItIT)
+	month := monday.Format(date.In(loc), "January", monday.LocaleItIT)
 	ms, err := getSpreadsheet(user, month)
 	if err != nil {
 		return err
@@ -314,7 +324,7 @@ func appendExitTime(user *types.User, date time.Time) error {
 
 	if len(ms) > 0 {
 		lastRow := ms[len(ms)-1]
-		if lastRow[0] != date.Format("2006-01-02") {
+		if lastRow[0] != date.In(loc).Format("2006-01-02") {
 			return errNoEnter
 		}
 		if lastRow[3] != "" {
@@ -326,7 +336,7 @@ func appendExitTime(user *types.User, date time.Time) error {
 
 	vr := &sheets.ValueRange{
 		Values: [][]interface{}{{
-			date.Format("15:04"),
+			date.In(loc).Format("15:04"),
 		}},
 	}
 
